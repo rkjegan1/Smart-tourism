@@ -1,0 +1,470 @@
+@import "tailwindcss";
+
+@theme {
+  /* ─── Premium Palette ─────────────────────────────────── */
+
+  /* Deep forest — navbar, headings, text */
+  --color-primary: #18231F;
+  --color-primary-dark: #0E1613;
+
+  /* Aged copper — buttons, links, and highlight details */
+  --color-accent: #A85F3C;
+  --color-accent-dark: #86482C;
+  --color-accent-light: #CC9367;
+
+  /* Olive taupe — secondary UI, muted text */
+  --color-secondary: #7F8173;
+  --color-secondary-dark: #696B60;
+
+  /* Warm ivory — main page background */
+  --color-surface: #F7F4EE;
+
+  /* Soft linen — cards, sections */
+  --color-card: #ECE8DE;
+  --color-card-dark: #E0DACD;
+
+  /* Warm grey — borders, dividers */
+  --color-muted: #D4D0C5;
+
+  /* Font family */
+  --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* ─── Animations ──────────────────────────────────────── */
+  --animate-fade-in: fade-in 0.5s ease-out both;
+  --animate-fade-in-up: fade-in-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-slide-in-right: slide-in-right 0.4s ease-out both;
+  --animate-toast-in: toast-in 0.4s cubic-bezier(0.21, 1.02, 0.73, 1) both;
+  --animate-toast-out: toast-out 0.3s ease-in both;
+  --animate-spinner: spinner 0.8s linear infinite;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 2s ease-in-out infinite;
+}
+
+/* ─── Keyframes ─────────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-12px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toast-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(-12px) scale(0.95); }
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.6; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes drift-light {
+  0%, 100% { transform: translate3d(-4%, -2%, 0) scale(1); }
+  50% { transform: translate3d(5%, 3%, 0) scale(1.08); }
+}
+
+@keyframes beach-wave-drift {
+  from { transform: translateX(-8%) translateY(0); }
+  to { transform: translateX(0) translateY(-5px); }
+}
+
+@keyframes beach-wash {
+  0% { transform: translateY(100%); opacity: 0; }
+  22%, 68% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+@keyframes crab-visit {
+  0%, 25% { opacity: 0; transform: translateY(1.5rem) rotate(-8deg); }
+  40%, 68% { opacity: 1; transform: translateY(0) rotate(6deg); }
+  100% { opacity: 0; transform: translateY(1rem) rotate(-4deg); }
+}
+
+@keyframes float-visit {
+  0%, 18% { opacity: 0; transform: translateY(2rem) rotate(-12deg) scale(0.75); }
+  38% { opacity: 1; transform: translateY(-0.4rem) rotate(8deg) scale(1); }
+  56% { opacity: 1; transform: translateY(0.35rem) rotate(-6deg) scale(1); }
+  76% { opacity: 1; transform: translateY(-0.2rem) rotate(5deg) scale(0.95); }
+  100% { opacity: 0; transform: translateY(1.5rem) rotate(-9deg) scale(0.8); }
+}
+
+@keyframes fish-jump {
+  0%, 68%, 100% { opacity: 0; transform: translateY(0) rotate(-14deg) scale(0.65); }
+  72% { opacity: 1; transform: translateY(-1.8rem) rotate(-38deg) scale(0.9); }
+  80% { opacity: 1; transform: translateY(-4.2rem) rotate(-3deg) scale(1); }
+  88% { opacity: 1; transform: translateY(-2.1rem) rotate(38deg) scale(0.9); }
+  94% { opacity: 0; transform: translateY(0) rotate(56deg) scale(0.7); }
+}
+
+/* Theme variables cascade through Tailwind's semantic color utilities. */
+:root[data-theme='dark'] {
+  --color-primary: #E5ECE7;
+  --color-primary-dark: #101A16;
+  --color-accent: #4FAE9A;
+  --color-accent-dark: #367E70;
+  --color-accent-light: #83CDBE;
+  --color-secondary: #A9B8AF;
+  --color-secondary-dark: #8B9B91;
+  --color-surface: #111A16;
+  --color-card: #1B2822;
+  --color-card-dark: #26352E;
+  --color-muted: #34443B;
+}
+
+:root[data-theme='beach'] {
+  --color-primary: #123D52;
+  --color-primary-dark: #082E43;
+  --color-accent: #EF4136;
+  --color-accent-dark: #C92D25;
+  --color-accent-light: #FF7A70;
+  --color-secondary: #66818A;
+  --color-secondary-dark: #4C6871;
+  --color-surface: #F5F0E6;
+  --color-card: #FCFAF5;
+  --color-card-dark: #EEE5D5;
+  --color-muted: #DED4C4;
+}
+
+/* ─── Base layer ────────────────────────────────────────── */
+@layer base {
+  body {
+    @apply bg-surface text-primary antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-primary font-semibold tracking-tight;
+  }
+
+  a {
+    @apply text-accent hover:text-accent-dark transition-colors duration-200;
+  }
+
+  input, select, textarea {
+    @apply bg-white border border-muted rounded-xl px-4 py-3 text-primary text-sm
+           placeholder:text-secondary/70
+           focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent
+           focus:shadow-[0_0_0_4px_rgba(168,95,60,0.10)]
+           transition-all duration-200;
+  }
+
+  select {
+    appearance: none;
+    padding-right: 2.9rem;
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--color-secondary) 50%),
+      linear-gradient(135deg, var(--color-secondary) 50%, transparent 50%);
+    background-position:
+      calc(100% - 1.15rem) 55%,
+      calc(100% - 0.85rem) 55%;
+    background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+    background-repeat: no-repeat;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 1px 2px rgba(8, 46, 67, 0.04);
+  }
+
+  :root[data-theme='dark'] input,
+  :root[data-theme='dark'] select,
+  :root[data-theme='dark'] textarea {
+    background-color: #16211C;
+  }
+
+  /* Explicit contrast fallbacks for browsers that do not support color-mix(). */
+  :root[data-theme='dark'] body,
+  :root[data-theme='dark'] h1,
+  :root[data-theme='dark'] h2,
+  :root[data-theme='dark'] h3,
+  :root[data-theme='dark'] h4,
+  :root[data-theme='dark'] h5,
+  :root[data-theme='dark'] h6,
+  :root[data-theme='dark'] .text-primary {
+    color: #E5ECE7;
+  }
+
+  :root[data-theme='dark'] .text-primary\/60 { color: #AAB8B0; }
+  :root[data-theme='dark'] .text-primary\/70 { color: #C0CBC5; }
+  :root[data-theme='dark'] .text-secondary { color: #A9B8AF; }
+  :root[data-theme='dark'] .text-secondary\/30 { color: #65756C; }
+  :root[data-theme='dark'] .text-secondary\/40 { color: #788A80; }
+  :root[data-theme='dark'] .text-secondary\/60 { color: #93A49B; }
+
+  :root[data-theme='dark'] select {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 1px 2px rgba(0, 0, 0, 0.28);
+  }
+
+  label {
+    @apply text-sm font-medium text-primary/80 tracking-wide;
+  }
+
+  ::selection {
+    background: rgba(168, 95, 60, 0.16);
+  }
+}
+
+/* ─── Component layer ───────────────────────────────────── */
+@layer components {
+  .btn-primary {
+    @apply bg-accent text-white font-medium px-6 py-2.5 rounded-xl
+           hover:bg-accent-dark hover:shadow-[0_4px_20px_rgba(168,95,60,0.30)]
+           active:scale-[0.97]
+           focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-surface
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:active:scale-100
+           transition-all duration-200 cursor-pointer;
+  }
+
+  .btn-secondary {
+    @apply bg-card text-primary font-medium px-6 py-2.5 rounded-xl border border-muted/60
+           hover:bg-card-dark hover:border-secondary/40 hover:shadow-[0_2px_12px_rgba(26,23,20,0.08)]
+           active:scale-[0.97]
+           focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:ring-offset-2 focus:ring-offset-surface
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:active:scale-100
+           transition-all duration-200 cursor-pointer;
+  }
+
+  .btn-ghost {
+    @apply text-surface/70 font-medium px-4 py-2 rounded-xl
+           hover:bg-white/10 hover:text-surface
+           active:scale-[0.97]
+           transition-all duration-200 cursor-pointer;
+  }
+
+  .card {
+    @apply bg-card rounded-2xl p-6 sm:p-8
+           shadow-[0_1px_2px_rgba(26,23,20,0.04),0_4px_16px_rgba(26,23,20,0.03)]
+           transition-all duration-300 ease-out;
+  }
+
+  .section-heading {
+    @apply text-xl font-semibold text-primary mb-5 flex items-center gap-2 tracking-tight;
+  }
+
+  .place-item {
+    @apply flex items-start gap-3 py-3.5 border-b border-muted/40 last:border-0
+           transition-colors duration-150
+           hover:bg-surface/50 -mx-2 px-2 rounded-xl;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-accent {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent/8 text-accent;
+  }
+
+  .badge-secondary {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary/70;
+  }
+
+  /* Navbar link underline animation */
+  .nav-link {
+    @apply relative font-medium px-1 py-0.5 transition-colors duration-200;
+    color: rgba(255, 255, 255, 0.66);
+  }
+  .nav-link:hover,
+  .nav-link--active { color: #FFFFFF; }
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-accent rounded-full
+           transition-all duration-300 ease-out;
+  }
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+
+  .brand-mark {
+    @apply rounded-xl bg-gradient-to-br from-accent-light via-accent to-accent-dark text-white
+           shadow-[0_5px_16px_rgba(168,95,60,0.28)] ring-1 ring-white/15;
+  }
+
+  .theme-switcher {
+    @apply items-center rounded-lg border border-white/10 bg-white/5 p-0.5;
+  }
+
+  .theme-choice {
+    @apply rounded-md px-2 py-1 text-[10px] font-semibold capitalize tracking-wide text-white/50 transition-colors duration-200 cursor-pointer hover:text-white;
+  }
+
+  .theme-choice.is-active {
+    @apply bg-white/15 text-white shadow-sm;
+  }
+
+  .theme-mobile-select {
+    @apply w-[4.7rem] rounded-lg border-white/10 bg-white/10 px-2 py-1.5 text-xs font-medium text-white focus:border-white/30 focus:ring-white/20;
+  }
+
+  .brand-compass { will-change: transform; }
+
+  .hero-atmosphere {
+    background:
+      radial-gradient(circle at 18% 25%, rgba(204, 147, 103, 0.20), transparent 23%),
+      radial-gradient(circle at 83% 70%, rgba(236, 232, 222, 0.12), transparent 25%);
+    animation: drift-light 12s ease-in-out infinite;
+  }
+
+  :root[data-theme='beach'] .beach-hero-image {
+    display: block !important;
+  }
+
+  .beach-waves {
+    display: none;
+  }
+
+  :root[data-theme='beach'] .beach-waves {
+    display: block;
+    position: fixed;
+    z-index: 40;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 4.5rem;
+    overflow: visible;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  :root[data-theme='beach'] .beach-waves::after {
+    content: '';
+    position: fixed;
+    z-index: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 52vh;
+    opacity: 0;
+    transform: translateY(100%);
+    background: linear-gradient(to top, rgba(35, 145, 178, 0.70), rgba(108, 197, 211, 0.34) 65%, transparent);
+    pointer-events: none;
+  }
+
+  :root[data-theme='beach'] .beach-waves:hover::after {
+    animation: beach-wash 3.6s cubic-bezier(0.3, 0.8, 0.3, 1) both;
+  }
+
+  .beach-wave {
+    position: absolute;
+    z-index: 1;
+    bottom: -2.5rem;
+    left: -10%;
+    width: 120%;
+    height: 5.5rem;
+    border-radius: 48% 52% 0 0 / 28% 32% 0 0;
+    animation: beach-wave-drift 7s ease-in-out infinite alternate;
+  }
+
+  .beach-wave-back {
+    background: rgba(76, 178, 201, 0.32);
+    animation-duration: 9s;
+  }
+
+  .beach-wave-front {
+    bottom: -3.25rem;
+    background:
+      radial-gradient(circle at 13px 3px, rgba(255, 255, 255, 0.96) 0 4px, transparent 4.8px) 0 0 / 28px 15px repeat-x,
+      radial-gradient(circle at 0 4px, rgba(255, 255, 255, 0.72) 0 3px, transparent 3.8px) 0 0 / 28px 15px repeat-x,
+      linear-gradient(to bottom, rgba(116, 210, 226, 0.62), rgba(28, 143, 177, 0.56));
+    animation-direction: alternate-reverse;
+  }
+
+  .beach-crab {
+    position: absolute;
+    z-index: 2;
+    bottom: 1.25rem;
+    opacity: 0;
+    font-size: 1.35rem;
+    filter: drop-shadow(0 2px 2px rgba(8, 46, 67, 0.22));
+  }
+
+  .beach-crab-one { left: 22%; }
+  .beach-crab-two { right: 27%; transform: scaleX(-1); }
+  .beach-crab-three { bottom: 10vh; left: 12%; font-size: 1.1rem; }
+  .beach-crab-four { bottom: 18vh; right: 13%; font-size: 1.15rem; transform: scaleX(-1); }
+  .beach-crab-five { bottom: 27vh; left: 38%; font-size: 1.05rem; }
+  .beach-crab-six { bottom: 35vh; right: 36%; font-size: 0.95rem; transform: scaleX(-1); }
+  .beach-crab-seven { bottom: 42vh; left: 63%; font-size: 0.9rem; }
+
+  :root[data-theme='beach'] .beach-waves:hover .beach-crab {
+    animation: crab-visit 3.6s ease-in-out both;
+  }
+
+  :root[data-theme='beach'] .beach-waves:hover .beach-crab-two {
+    animation-delay: 0.18s;
+  }
+
+  :root[data-theme='beach'] .beach-waves:hover .beach-crab-three { animation-delay: 0.32s; }
+  :root[data-theme='beach'] .beach-waves:hover .beach-crab-four { animation-delay: 0.48s; }
+  :root[data-theme='beach'] .beach-waves:hover .beach-crab-five { animation-delay: 0.64s; }
+  :root[data-theme='beach'] .beach-waves:hover .beach-crab-six { animation-delay: 0.78s; }
+  :root[data-theme='beach'] .beach-waves:hover .beach-crab-seven { animation-delay: 0.92s; }
+
+  .beach-float {
+    position: absolute;
+    z-index: 2;
+    bottom: 5vh;
+    opacity: 0;
+    font-size: 2rem;
+    filter: drop-shadow(0 3px 3px rgba(8, 46, 67, 0.20));
+  }
+
+  .beach-float-one { left: 30%; }
+  .beach-float-two { bottom: 20vh; right: 22%; font-size: 1.7rem; }
+  .beach-float-three { bottom: 34vh; left: 53%; font-size: 1.45rem; }
+
+  :root[data-theme='beach'] .beach-waves:hover .beach-float {
+    animation: float-visit 3.6s ease-in-out both;
+  }
+
+  :root[data-theme='beach'] .beach-waves:hover .beach-float-one { animation-delay: 0.25s; }
+  :root[data-theme='beach'] .beach-waves:hover .beach-float-two { animation-delay: 0.58s; }
+  :root[data-theme='beach'] .beach-waves:hover .beach-float-three { animation-delay: 0.86s; }
+
+  .beach-fish {
+    position: absolute;
+    z-index: 3;
+    bottom: 0.4rem;
+    opacity: 0;
+    font-size: 1.1rem;
+    filter: drop-shadow(0 2px 2px rgba(8, 46, 67, 0.22));
+    animation: fish-jump 4.8s ease-in-out infinite;
+  }
+
+  .beach-fish-one { left: 17%; animation-delay: -0.6s; }
+  .beach-fish-two { left: 49%; font-size: 1rem; animation-delay: -2.2s; }
+  .beach-fish-three { right: 18%; font-size: 0.9rem; animation-delay: -3.5s; }
+
+  /* Loading spinner */
+  .spinner {
+    @apply w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spinner;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-atmosphere,
+  .beach-wave,
+  .beach-waves::after,
+  .beach-crab,
+  .beach-float,
+  .beach-fish {
+    animation: none;
+  }
+}
