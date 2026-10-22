@@ -1,0 +1,9 @@
+
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "http://smart-tourism-api-2.eba-prniyumm.ap-southeast-2.elasticbeanstalk.com/api/$1"
+    }
+  ]
+}
