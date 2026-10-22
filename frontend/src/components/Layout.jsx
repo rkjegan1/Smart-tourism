@@ -1,13 +1,46 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { CompassIcon } from './Icons';
 import Toast from './Toast';
+import CloudStatusDrawer from './CloudStatusDrawer';
+import { getHealth } from '../api';
 
 export default function Layout({ user, onLogout, toasts, dismissToast, theme, onThemeChange }) {
+  const [cloudDrawerOpen, setCloudDrawerOpen] = useState(false);
+  const [cloudStatus, setCloudStatus] = useState({ healthy: true, latency: null });
+
   const compassRef = useRef(null);
   const compassFrameRef = useRef(null);
   const compassAngleRef = useRef(0);
   const compassSpeedRef = useRef(0.18);
+
+  useEffect(() => {
+    let isMounted = true;
+    const pingCloud = async () => {
+      const start = performance.now();
+      try {
+        const data = await getHealth();
+        const end = performance.now();
+        if (isMounted) {
+          setCloudStatus({
+            healthy: data.status === 'healthy',
+            latency: Math.round(end - start),
+          });
+        }
+      } catch {
+        if (isMounted) {
+          setCloudStatus({ healthy: false, latency: null });
+        }
+      }
+    };
+
+    pingCloud();
+    const interval = setInterval(pingCloud, 30000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   const linkClass = ({ isActive }) =>
     `nav-link text-sm ${isActive ? 'nav-link--active after:w-full' : ''}`;
@@ -69,6 +102,40 @@ export default function Layout({ user, onLogout, toasts, dismissToast, theme, on
               <NavLink to="/recommend" className={linkClass}>
                 Recommend
               </NavLink>
+              <NavLink to="/architecture" className={linkClass}>
+                Architecture
+              </NavLink>
+
+              {/* Live AWS Cloud Architecture Telemetry Pill */}
+              <button
+                type="button"
+                onClick={() => setCloudDrawerOpen(true)}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 border border-white/15 text-white transition-all duration-200 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+                title="View live AWS Cloud Architecture telemetry & diagnostics"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span
+                    className={`animate-ping absolute inline-flex h-full w-full rounded-full ${
+                      cloudStatus.healthy ? 'bg-emerald-400' : 'bg-amber-400'
+                    } opacity-75`}
+                  />
+                  <span
+                    className={`relative inline-flex rounded-full h-2 w-2 ${
+                      cloudStatus.healthy ? 'bg-emerald-500' : 'bg-amber-500'
+                    }`}
+                  />
+                </span>
+                <span className="hidden md:inline font-medium tracking-tight">Cloud Status</span>
+                <span
+                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                    cloudStatus.healthy
+                      ? 'bg-emerald-500/25 text-emerald-300'
+                      : 'bg-amber-500/25 text-amber-300'
+                  }`}
+                >
+                  {cloudStatus.latency !== null ? `${cloudStatus.latency}ms` : 'Live'}
+                </span>
+              </button>
 
               <div className="theme-switcher hidden lg:flex" aria-label="Choose a theme">
                 {['light', 'dark', 'beach'].map((option) => (
@@ -155,6 +222,12 @@ export default function Layout({ user, onLogout, toasts, dismissToast, theme, on
           </div>
         </div>
       </footer>
+
+      {/* ─── Cloud Architecture Telemetry Drawer ─────────── */}
+      <CloudStatusDrawer
+        isOpen={cloudDrawerOpen}
+        onClose={() => setCloudDrawerOpen(false)}
+      />
     </div>
   );
 }

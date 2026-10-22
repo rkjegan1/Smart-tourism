@@ -7,6 +7,7 @@ import ExplorePage from './pages/ExplorePage';
 import RecommendPage from './pages/RecommendPage';
 import PlaceDetailPage from './pages/PlaceDetailPage';
 import LoginPage from './pages/LoginPage';
+import ArchitecturePage from './pages/ArchitecturePage';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -57,6 +58,7 @@ export default function App() {
           <Route path="explore" element={<ExplorePage addToast={addToast} />} />
           <Route path="recommend" element={<RecommendPage addToast={addToast} />} />
           <Route path="place/:id" element={<PlaceDetailPage addToast={addToast} />} />
+          <Route path="architecture" element={<ArchitecturePage addToast={addToast} />} />
           <Route path="login" element={<LoginPage setUser={setUser} addToast={addToast} />} />
         </Route>
       </Routes>

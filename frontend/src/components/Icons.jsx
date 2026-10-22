@@ -21,10 +21,28 @@ export const StarIcon = ({ className = 'w-3.5 h-3.5 text-amber-600' }) => (
 );
 
 export const CompassIcon = forwardRef(({ className = 'w-5 h-5', ...props }, ref) => (
-  <svg ref={ref} {...props} className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="10" />
-    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" opacity="0.3" stroke="none" />
-    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+  <svg ref={ref} {...props} className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.4" />
+    <circle cx="12" cy="12" r="7.5" stroke="currentColor" strokeWidth="1" strokeDasharray="1.5 2.5" strokeOpacity="0.6" />
+    {/* Cardinal ticks */}
+    <line x1="12" y1="1" x2="12" y2="3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="12" y1="20.5" x2="12" y2="23" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="1" y1="12" x2="3.5" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="20.5" y1="12" x2="23" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    {/* Faceted North point */}
+    <polygon points="12,3.5 13.8,12 12,10.5" fill="currentColor" />
+    <polygon points="12,3.5 10.2,12 12,10.5" fill="currentColor" fillOpacity="0.4" />
+    {/* Faceted South point */}
+    <polygon points="12,20.5 10.2,12 12,13.5" fill="currentColor" />
+    <polygon points="12,20.5 13.8,12 12,13.5" fill="currentColor" fillOpacity="0.4" />
+    {/* Faceted East point */}
+    <polygon points="20.5,12 12,10.2 13.5,12" fill="currentColor" />
+    <polygon points="20.5,12 12,13.8 13.5,12" fill="currentColor" fillOpacity="0.4" />
+    {/* Faceted West point */}
+    <polygon points="3.5,12 12,13.8 10.5,12" fill="currentColor" />
+    <polygon points="3.5,12 12,10.2 10.5,12" fill="currentColor" fillOpacity="0.4" />
+    {/* Center jewel */}
+    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
   </svg>
 ));
 

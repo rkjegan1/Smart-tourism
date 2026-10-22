@@ -37,7 +37,7 @@ export default function HomePage() {
             Discover Your<br className="hidden sm:block" />
             Perfect Destination
           </h1>
-          <p className="text-white/50 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-12">
+          <p className="text-white/60 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-10">
             Personalized travel recommendations tailored to your interests, budget, and travel style.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

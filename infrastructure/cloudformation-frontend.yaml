@@ -1,0 +1,187 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Smart Tourism App - Production Frontend & Edge CDN Infrastructure.
+  Provisions a private Amazon S3 bucket with Block Public Access,
+  Amazon CloudFront Distribution with Origin Access Control (OAC),
+  HTTPS redirection, SPA routing fallbacks, and optional unified /api/* routing.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: smart-tourism
+    Description: Base name for all deployed resources.
+
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues:
+      - dev
+      - prod
+    Description: Deployment stage/environment.
+
+  BackendApiDomain:
+    Type: String
+    Default: ''
+    Description: >
+      Optional. The domain name of the Elastic Beanstalk backend
+      (e.g., smart-tourism-api.us-east-1.elasticbeanstalk.com).
+      If provided, CloudFront routes /api/* directly to the backend under a single unified domain.
+      If left blank, only S3 static hosting is configured initially.
+
+Conditions:
+  HasBackendApi: !Not [!Equals [!Ref BackendApiDomain, '']]
+
+Resources:
+  # 1. Private S3 Bucket for Static React Assets
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ProjectName}-frontend-${Environment}-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: Environment
+          Value: !Ref Environment
+
+  # 2. CloudFront Origin Access Control (OAC)
+  CloudFrontOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${ProjectName}-oac-${Environment}'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+        Description: Secure Origin Access Control for Smart Tourism Frontend S3 bucket
+
+  # 3. CloudFront Distribution
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub '${ProjectName} Distribution (${Environment})'
+        DefaultRootObject: index.html
+        PriceClass: PriceClass_100 # Lowest cost: US, Canada, Europe
+        HttpVersion: http2and3
+        Origins:
+          !If
+            - HasBackendApi
+            - - Id: S3Origin
+                DomainName: !GetAtt FrontendBucket.RegionalDomainName
+                OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
+                S3OriginConfig:
+                  OriginAccessIdentity: '' # Empty when using modern OAC
+              - Id: BackendApiOrigin
+                DomainName: !Ref BackendApiDomain
+                CustomOriginConfig:
+                  HTTPPort: 80
+                  HTTPSPort: 443
+                  OriginProtocolPolicy: http-only
+                  OriginKeepaliveTimeout: 5
+                  OriginReadTimeout: 30
+            - - Id: S3Origin
+                DomainName: !GetAtt FrontendBucket.RegionalDomainName
+                OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
+                S3OriginConfig:
+                  OriginAccessIdentity: '' # Empty when using modern OAC
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          # Managed-CachingOptimized Cache Policy ID
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+        CacheBehaviors:
+          !If
+            - HasBackendApi
+            - - PathPattern: /api/*
+                TargetOriginId: BackendApiOrigin
+                ViewerProtocolPolicy: redirect-to-https
+                AllowedMethods:
+                  - GET
+                  - HEAD
+                  - OPTIONS
+                  - PUT
+                  - POST
+                  - PATCH
+                  - DELETE
+                CachedMethods:
+                  - GET
+                  - HEAD
+                # Managed-CachingDisabled (API responses must never be cached as static files)
+                CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+                # Managed-AllViewerExceptHostHeader (Forwards Authorization, cookies, query strings, and preserves Beanstalk Host)
+                OriginRequestPolicyId: b684b08a-5e97-414e-b242-58b4168a9365
+            - !Ref AWS::NoValue
+        # SPA Routing: Route non-asset 403/404 errors to index.html with 200 OK
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 0
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 0
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: Environment
+          Value: !Ref Environment
+
+  # 4. S3 Bucket Policy allowing CloudFront OAC read access
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipalReadOnly
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub '${FrontendBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution.Id}'
+
+Outputs:
+  S3BucketName:
+    Description: Name of the S3 bucket hosting frontend build artifacts
+    Value: !Ref FrontendBucket
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-FrontendBucket'
+
+  CloudFrontDistributionId:
+    Description: ID of the CloudFront Distribution
+    Value: !Ref CloudFrontDistribution
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-CloudFrontDistributionId'
+
+  CloudFrontDomainName:
+    Description: Generated CloudFront Domain URL (HTTPS)
+    Value: !GetAtt CloudFrontDistribution.DomainName
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-CloudFrontDomain'
+
+  WebsiteURL:
+    Description: Public URL for the Smart Tourism Web Application
+    Value: !Sub 'https://${CloudFrontDistribution.DomainName}'
