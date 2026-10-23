@@ -70,6 +70,14 @@ export default function PlaceCard({ place, isTopPick = false }) {
             </div>
           )}
         </div>
+
+        {/* Personalized AI Match Reason */}
+        {place.aiReason && (
+          <div className="mt-3 pt-2 border-t border-muted/30 flex items-start gap-2 text-xs text-accent-dark font-medium bg-accent/5 p-2.5 rounded-xl border border-accent/15">
+            <span className="text-sm shrink-0">✨</span>
+            <span className="line-clamp-2 leading-relaxed">{place.aiReason}</span>
+          </div>
+        )}
       </div>
       </Link>
       {place.imageAttribution?.photographer && (
