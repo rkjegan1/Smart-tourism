@@ -20,6 +20,7 @@ export default function LoginPage({ setUser, addToast }) {
           ? await loginUser({ email: authForm.email, password: authForm.password })
           : await registerUser(authForm);
       localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
       addToast(`Welcome${authMode === 'login' ? ' back' : ''}, ${data.user.name}!`, 'success');
       navigate('/');

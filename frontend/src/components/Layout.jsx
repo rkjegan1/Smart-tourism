@@ -5,7 +5,7 @@ import Toast from './Toast';
 import CloudStatusDrawer from './CloudStatusDrawer';
 import { getHealth } from '../api';
 
-export default function Layout({ user, onLogout, toasts, dismissToast, theme, onThemeChange }) {
+export default function Layout({ user, onLogout, toasts, dismissToast, theme, onThemeChange, isArchitectureAdmin }) {
   const [cloudDrawerOpen, setCloudDrawerOpen] = useState(false);
   const [cloudStatus, setCloudStatus] = useState({ healthy: true, latency: null });
 
@@ -15,6 +15,7 @@ export default function Layout({ user, onLogout, toasts, dismissToast, theme, on
   const compassSpeedRef = useRef(0.18);
 
   useEffect(() => {
+    if (!isArchitectureAdmin) return;
     let isMounted = true;
     const pingCloud = async () => {
       const start = performance.now();
@@ -40,7 +41,7 @@ export default function Layout({ user, onLogout, toasts, dismissToast, theme, on
       isMounted = false;
       clearInterval(interval);
     };
-  }, []);
+  }, [isArchitectureAdmin]);
 
   const linkClass = ({ isActive }) =>
     `nav-link text-sm ${isActive ? 'nav-link--active after:w-full' : ''}`;
@@ -102,40 +103,44 @@ export default function Layout({ user, onLogout, toasts, dismissToast, theme, on
               <NavLink to="/recommend" className={linkClass}>
                 Recommend
               </NavLink>
-              <NavLink to="/architecture" className={linkClass}>
-                Architecture
-              </NavLink>
+              {isArchitectureAdmin && (
+                <NavLink to="/architecture" className={linkClass}>
+                  Architecture
+                </NavLink>
+              )}
 
               {/* Live AWS Cloud Architecture Telemetry Pill */}
-              <button
-                type="button"
-                onClick={() => setCloudDrawerOpen(true)}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 border border-white/15 text-white transition-all duration-200 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
-                title="View live AWS Cloud Architecture telemetry & diagnostics"
-              >
-                <span className="relative flex h-2 w-2">
-                  <span
-                    className={`animate-ping absolute inline-flex h-full w-full rounded-full ${
-                      cloudStatus.healthy ? 'bg-emerald-400' : 'bg-amber-400'
-                    } opacity-75`}
-                  />
-                  <span
-                    className={`relative inline-flex rounded-full h-2 w-2 ${
-                      cloudStatus.healthy ? 'bg-emerald-500' : 'bg-amber-500'
-                    }`}
-                  />
-                </span>
-                <span className="hidden md:inline font-medium tracking-tight">Cloud Status</span>
-                <span
-                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
-                    cloudStatus.healthy
-                      ? 'bg-emerald-500/25 text-emerald-300'
-                      : 'bg-amber-500/25 text-amber-300'
-                  }`}
+              {isArchitectureAdmin && (
+                <button
+                  type="button"
+                  onClick={() => setCloudDrawerOpen(true)}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 border border-white/15 text-white transition-all duration-200 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+                  title="View live AWS Cloud Architecture telemetry & diagnostics"
                 >
-                  {cloudStatus.latency !== null ? `${cloudStatus.latency}ms` : 'Live'}
-                </span>
-              </button>
+                  <span className="relative flex h-2 w-2">
+                    <span
+                      className={`animate-ping absolute inline-flex h-full w-full rounded-full ${
+                        cloudStatus.healthy ? 'bg-emerald-400' : 'bg-amber-400'
+                      } opacity-75`}
+                    />
+                    <span
+                      className={`relative inline-flex rounded-full h-2 w-2 ${
+                        cloudStatus.healthy ? 'bg-emerald-500' : 'bg-amber-500'
+                      }`}
+                    />
+                  </span>
+                  <span className="hidden md:inline font-medium tracking-tight">Cloud Status</span>
+                  <span
+                    className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                      cloudStatus.healthy
+                        ? 'bg-emerald-500/25 text-emerald-300'
+                        : 'bg-amber-500/25 text-amber-300'
+                    }`}
+                  >
+                    {cloudStatus.latency !== null ? `${cloudStatus.latency}ms` : 'Live'}
+                  </span>
+                </button>
+              )}
 
               <div className="theme-switcher hidden lg:flex" aria-label="Choose a theme">
                 {['light', 'dark', 'beach'].map((option) => (
@@ -224,10 +229,12 @@ export default function Layout({ user, onLogout, toasts, dismissToast, theme, on
       </footer>
 
       {/* ─── Cloud Architecture Telemetry Drawer ─────────── */}
-      <CloudStatusDrawer
-        isOpen={cloudDrawerOpen}
-        onClose={() => setCloudDrawerOpen(false)}
-      />
+      {isArchitectureAdmin && (
+        <CloudStatusDrawer
+          isOpen={cloudDrawerOpen}
+          onClose={() => setCloudDrawerOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -10,7 +10,7 @@ const selectClass =
   'focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent ' +
   'focus:shadow-[0_0_0_4px_rgba(168,95,60,0.10)] transition-all duration-200';
 
-export default function RecommendPage({ addToast }) {
+export default function RecommendPage({ addToast, isArchitectureAdmin }) {
   const [answers, setAnswers] = useState({ interest: 'nature', budget: 'low', groupType: 'solo' });
   const [recommended, setRecommended] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -137,33 +137,35 @@ export default function RecommendPage({ addToast }) {
         ) : recommended.length > 0 ? (
           <>
             {/* ─── Cloud Execution Telemetry Banner ─────────── */}
-            <div className="bg-gradient-to-r from-primary-dark via-primary to-primary-dark text-white rounded-2xl p-4 sm:p-5 mb-8 border border-white/10 shadow-md animate-fade-in flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-accent/20 border border-accent/40 flex items-center justify-center text-lg shrink-0">
-                  ⚡
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-accent-light">
-                      Cloud Execution Telemetry
-                    </span>
-                    {queryLatency !== null && (
-                      <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-mono px-2 py-0.5 rounded-full border border-emerald-500/30 font-bold">
-                        {queryLatency} ms
-                      </span>
-                    )}
+            {isArchitectureAdmin && (
+              <div className="bg-gradient-to-r from-primary-dark via-primary to-primary-dark text-white rounded-2xl p-4 sm:p-5 mb-8 border border-white/10 shadow-md animate-fade-in flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-accent/20 border border-accent/40 flex items-center justify-center text-lg shrink-0">
+                    ⚡
                   </div>
-                  <p className="text-xs text-white/70 mt-0.5">
-                    Processed via <span className="text-white font-semibold">AWS Elastic Beanstalk (Node.js 20 on EC2)</span> • Decision Tree Heuristics • Persisted to <span className="text-white font-semibold">MongoDB Atlas M0</span>
-                  </p>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-accent-light">
+                        Cloud Execution Telemetry
+                      </span>
+                      {queryLatency !== null && (
+                        <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-mono px-2 py-0.5 rounded-full border border-emerald-500/30 font-bold">
+                          {queryLatency} ms
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-white/70 mt-0.5">
+                      Processed via <span className="text-white font-semibold">AWS Elastic Beanstalk (Node.js 20 on EC2)</span> • Decision Tree Heuristics • Persisted to <span className="text-white font-semibold">MongoDB Atlas M0</span>
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-[11px] font-mono text-white/60 bg-black/30 px-3 py-1.5 rounded-xl border border-white/5 shrink-0 self-start md:self-auto">
+                  <span className="text-orange-300">Edge: CloudFront</span>
+                  <span>•</span>
+                  <span className="text-emerald-300">HTTP 200 OK</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-[11px] font-mono text-white/60 bg-black/30 px-3 py-1.5 rounded-xl border border-white/5 shrink-0 self-start md:self-auto">
-                <span className="text-orange-300">Edge: CloudFront</span>
-                <span>•</span>
-                <span className="text-emerald-300">HTTP 200 OK</span>
-              </div>
-            </div>
+            )}
 
             <div className="flex items-baseline justify-between mb-8">
               <div>
