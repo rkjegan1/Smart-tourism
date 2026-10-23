@@ -6,7 +6,21 @@
 
 const GROQ_API_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 const DEFAULT_MODEL = 'qwen/qwen3.8-27b';
-const FALLBACK_MODELS = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'];
+const FALLBACK_MODELS = ['openai/gpt-oss-20b', 'openai/gpt-oss-120b'];
+
+/**
+ * Clean potential markdown wrappers around JSON
+ */
+function cleanJsonString(str) {
+  if (!str) return '';
+  let cleaned = str.trim();
+  if (cleaned.startsWith('```json')) {
+    cleaned = cleaned.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
+  } else if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
+  }
+  return cleaned.trim();
+}
 
 /**
  * Generate AI insights, personalized reasons, and a mini-itinerary for recommended places
@@ -68,7 +82,7 @@ Provide the JSON response tailored to these specific places and traveler profile
 
   for (const model of modelsToTry) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 7000);
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
 
     try {
       const response = await fetch(GROQ_API_ENDPOINT, {
@@ -80,7 +94,7 @@ Provide the JSON response tailored to these specific places and traveler profile
         body: JSON.stringify({
           model,
           temperature: 0.6,
-          max_tokens: 800,
+          max_tokens: 2500,
           response_format: { type: 'json_object' },
           messages: [
             { role: 'system', content: systemPrompt },
@@ -93,15 +107,17 @@ Provide the JSON response tailored to these specific places and traveler profile
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        console.warn(`[Groq AI] Model ${model} returned HTTP ${response.status}`);
+        const errorText = await response.text();
+        console.warn(`[Groq AI] Model ${model} returned HTTP ${response.status}: ${errorText.slice(0, 150)}`);
         continue;
       }
 
       const json = await response.json();
-      const content = json.choices?.[0]?.message?.content;
-      if (!content) continue;
+      const rawContent = json.choices?.[0]?.message?.content;
+      if (!rawContent) continue;
 
-      const parsed = JSON.parse(content);
+      const cleaned = cleanJsonString(rawContent);
+      const parsed = JSON.parse(cleaned);
       return {
         model,
         headline: parsed.headline || 'Curated Recommendations For You',
